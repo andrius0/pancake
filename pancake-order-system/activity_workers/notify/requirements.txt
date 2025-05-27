@@ -1,0 +1,14 @@
+annotated-types==0.7.0
+iniconfig==2.1.0
+packaging==24.2
+pluggy==1.6.0
+protobuf==6.31.0
+pydantic==2.11.5
+pydantic_core==2.33.2
+pytest==8.3.5
+temporalio==1.11.1
+types-protobuf==6.30.2.20250516
+typing-inspection==0.4.1
+typing_extensions==4.13.2
+langchain>=0.3.25
+inflect
