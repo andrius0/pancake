@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Refrence [todo.md](mdc:todo.md) for current status of work.
+
+Update [todo.md](mdc:todo.md)
+- As work is performed make update this file accordingly: mark task as done if it was done, if task was accomplished but was not in the list update the list.
+- Create new tasks as necessary for future work.

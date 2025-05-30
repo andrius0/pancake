@@ -1,0 +1,219 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## Detailed Requirements for System Redesign (Updated to Current State)
+
+### 1. Order Service
+
+* **Functionality:**
+  * Entry point for customer orders via RESTful API.
+  * Validates incoming orders and initiates Temporal workflows.
+  * Uses FastAPI for API layer.
+  * Logs all major interactions using shared logging config.
+
+* **Inputs:**
+  ```json
+  {
+    "order_id": "str",
+    "customer_order": "str",
+    "customer_name": "str",
+    "special_instructions": "str (optional)"
+  }
+  ```
+
+* **Outputs:**
+  ```json
+  {
+    "order_id": "str",
+    "workflow_id": "str",
+    "status": "accepted",
+    "message": "Order accepted and workflow started"
+  }
+  ```
+
+* **AI Integration:** None.
+* **Data Store:** None.
+* **Config:** All secrets/config loaded from `.env` using `dotenv`.
+
+---
+
+### 2. Workflow Worker
+
+* **Functionality:**
+  * Central orchestration logic using Temporal workflow.
+  * Manages the lifecycle of a pancake order from creation through fulfillment.
+  * Logs all major workflow steps and errors.
+
+* **Inputs:**
+  ```json
+  {
+    "order_id": "str",
+    "order_details": OrderDetails
+  }
+  ```
+
+* **Outputs:** Final workflow state and notifications sent.
+* **AI Integration:** None.
+* **Activities Managed:**
+  * Analyze Order
+  * Inventory Check
+  * Execute Order (Kitchen)
+  * Notify
+* **Config:** All secrets/config loaded from `.env` using `dotenv`.
+
+---
+
+### 3. Analyze Order Worker (AI Service)
+
+* **Functionality:**
+  * Interprets customer order text to structured ingredient requirements using AI (OpenAI GPT model).
+  * Uses LangChain framework with OpenAI API for NLP-driven ingredient extraction.
+  * Logs inputs and outputs using shared logging config.
+
+* **Inputs:**
+  ```json
+  {
+    "customer_order": "str (natural language order description)"
+  }
+  ```
+
+* **Outputs (Ingredients object):**
+  ```json
+  {
+    "ingredients": [
+      { "ingredient_name": "str", "amount": float, "unit": "str" }
+    ]
+  }
+  ```
+
+* **AI Integration:**
+  * LangChain `create_react_agent` with OpenAI GPT-4.1 for natural language processing.
+* **Data Store:** None.
+* **Config:** All secrets/config loaded from `.env` using `dotenv`.
+
+---
+
+### 4. Inventory Check Worker (AI + DB Interaction)
+
+* **Functionality:**
+  * Checks ingredient availability.
+  * AI-driven decision logic for unit conversions and availability.
+  * Uses SQLAlchemy for DB access.
+  * Logs all major actions and errors using shared logging config.
+
+* **Inputs:**
+  ```json
+  { "order_id": "str", "ingredients": Ingredients }
+  ```
+
+* **Outputs (InventoryResponse object):**
+  ```json
+  {
+    "decision": "make/no make",
+    "available_ingredients": ["str"],
+    "missing_ingredients": ["str"]
+  }
+  ```
+
+* **AI Integration:** LangChain GPT-4.1 for ingredient sufficiency and database checks.
+* **Data Store:** PostgreSQL (`kitchen_inventory` table).
+  ```sql
+  kitchen_inventory(
+    ingredient VARCHAR,
+    available_amount FLOAT,
+    unit VARCHAR
+  )
+  ```
+* **Config:** All secrets/config loaded from `.env` using `dotenv`.
+* **Testing:** (Ongoing) Optional: Investigate/fix async/sync issues with agent.invoke.
+
+---
+
+### 5. Kitchen Worker
+
+* **Functionality:**
+  * Deducts ingredients from inventory (see `db_tools_kitchen.py`).
+  * Implements `execute_order` activity.
+  * Logs all major actions and errors using shared logging config.
+
+* **Inputs:**
+  ```json
+  { "ingredients": Ingredients }
+  ```
+
+* **Outputs (Updated Ingredients after consumption):**
+  ```json
+  {
+    "ingredients": [
+      { "ingredient_name": "str", "amount": float, "unit": "str" }
+    ]
+  }
+  ```
+
+* **AI Integration:** None.
+* **Data Store:** PostgreSQL (`kitchen_inventory`).
+* **Config:** All secrets/config loaded from `.env` using `dotenv`.
+* **Testing:** (Ongoing) Add/expand unit and integration tests for kitchen worker.
+* **Error Handling:** (Ongoing) Review/document error handling and edge cases.
+
+---
+
+### 6. Notify Worker
+
+* **Functionality:**
+  * Sends notifications based on workflow outcomes.
+  * Implements `notify` activity.
+  * Logs all major actions and errors using shared logging config.
+
+* **Inputs:**
+  ```json
+  { "order_id": "str", "message": "str" }
+  ```
+
+* **Outputs:** Confirmation of notification delivery.
+* **AI Integration:** None.
+* **Data Store:** None.
+* **Config:** All secrets/config loaded from `.env` using `dotenv`.
+* **Testing:** (Ongoing) Add/expand unit and integration tests for notify worker.
+
+---
+
+### Data Flow and AI Integration Summary
+
+| Service                | AI Involved?           | Input Source  | Output Destination    | Data Store Interaction  |
+| ---------------------- | ---------------------- | ------------- | --------------------- | ----------------------- |
+| Order Service          | No                     | Customer API  | Temporal Workflow     | None                    |
+| Workflow Worker        | No                     | Order Service | Activity Workers      | None                    |
+| Analyze Order Worker   | Yes (OpenAI/LangChain) | Workflow      | Workflow              | None                    |
+| Inventory Check Worker | Yes (OpenAI/LangChain) | Workflow      | Workflow              | PostgreSQL Inventory DB |
+| Kitchen Worker         | No                     | Workflow      | Workflow              | PostgreSQL Inventory DB |
+| Notify Worker          | No                     | Workflow      | Customer Notification | None                    |
+
+---
+
+### AI Roles Explained
+
+* **Analyze Order Worker:** NLP parsing of customer orders.
+* **Inventory Check Worker:** AI-based decision-making and unit compatibility checks.
+
+---
+
+### Data Stores
+
+* **PostgreSQL (`kitchen_inventory`):** Tracks available ingredients and quantities.
+
+---
+
+### Logging and Monitoring
+
+* Standardized structured logging using shared logging config.
+* (Ongoing) Add/expand real-time monitoring and alerting.
+
+---
+
+### Deployment Recommendations
+
+* Docker containers, Docker Compose, Kubernetes, and Temporal Server setup for scalability and orchestration.
+* (Ongoing) Add/expand documentation for deployment, environment setup, and local development.

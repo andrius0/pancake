@@ -6,8 +6,12 @@ from temporalio.contrib.pydantic import pydantic_data_converter
 import os
 import json
 from dotenv import load_dotenv
+from shared.event_publisher import EventPublisher
+import asyncio
 
 load_dotenv()
+
+REDIS_CHANNEL = os.getenv("REDIS_CHANNEL", "orders")
 
 logger = setup_logging("order_service")
 
@@ -20,6 +24,15 @@ app = FastAPI(
 @app.post("/orders", response_model=OrderResponse)
 async def create_order(order: OrderRequest):
     try:
+        # Publish event to Redis
+        publisher = EventPublisher()
+        event_message = {
+            "status": "received",
+            "message": "Order has been received and is being processed.",
+            "order_id": str(order.order_id),
+        }
+        asyncio.create_task(publisher.publish_event(REDIS_CHANNEL, event_message))
+        
         log_with_temporal_context(
             logger,
             "info",

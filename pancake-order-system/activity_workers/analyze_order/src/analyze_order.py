@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-load_dotenv()
 # Analyze order using LangChain and OpenAI 
 from temporalio import activity
 from shared.interface import Ingredients
@@ -7,6 +6,12 @@ from langchain_openai import ChatOpenAI
 import os
 import logging
 import json
+from shared.event_publisher import EventPublisher
+import asyncio
+
+load_dotenv()
+
+REDIS_CHANNEL = os.getenv("REDIS_CHANNEL", "orders")
 
 @activity.defn
 async def analyze_order(customer_order: str) -> Ingredients:
@@ -40,6 +45,16 @@ async def analyze_order(customer_order: str) -> Ingredients:
             "- Each ingredient should have: ingredient_name (str), amount (float), unit (str).\n"
             "- Common ingredients include: flour, eggs, milk, butter, sugar, baking powder, salt."
         )
+
+        # Publish event to Redis
+        publisher = EventPublisher()
+        event_message = {
+            "status": "analysis",
+            "message": "Order received and is being analyzed.",
+            "order": str(customer_order),
+        }
+        asyncio.create_task(publisher.publish_event(REDIS_CHANNEL, event_message))
+
         result = await structured_llm.ainvoke(prompt.format(order=customer_order))
         logger.info("Order analysis completed.")
         logger.info(f"Analysis output: {result.model_dump()}")

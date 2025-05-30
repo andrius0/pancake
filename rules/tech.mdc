@@ -1,0 +1,24 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Languages & Runtimes
+Python 3.11+
+Docker
+Temporal (external)
+
+Frameworks & Libraries (use newest versions possible)
+FastAPI >= 0.95.0 — REST API framework for Order Service
+Temporal Python SDK >= 1.2.0 — Workflow orchestration
+Pydantic >= 2.0.0 — Data validation and type enforcement
+LangChain >= 0.1.13 — AI agent orchestration
+OpenAI SDK >= 1.12.0 — OpenAI GPT-4.1 integration
+SQLAlchemy >= 2.0.20 — Database interaction (inventory, kitchen)
+psycopg2-binary >= 2.9.6 — PostgreSQL driver — REST API framework for Order Service
+Temporal Python SDK — Workflow orchestration
+Pydantic — Data validation and type enforcement
+LangChain — AI agent orchestration
+OpenAI GPT-4.1 — Natural Language Processing
+SQLAlchemy — Database interaction (inventory, kitchen)
+psycopg2 — PostgreSQL driver

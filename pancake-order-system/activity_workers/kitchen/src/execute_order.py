@@ -4,14 +4,24 @@ from db_tools_kitchen import subtract_ingredient_amount
 import logging
 import json
 
+from shared.event_publisher import EventPublisher
+import asyncio
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+REDIS_CHANNEL = os.getenv("REDIS_CHANNEL", "orders")
+
 logger = logging.getLogger(__name__)
 
 @activity.defn
-async def execute_order(ingredients: Ingredients) -> Ingredients:
+async def execute_order(order_id: str, ingredients: Ingredients) -> Ingredients:
     """
     Executes the kitchen order by consuming the specified ingredients from the database.
 
     Args:
+        order_id (str): The order ID for this kitchen order.
         ingredients (Ingredients): An Ingredients object containing a list of IngredientItem objects to be consumed.
 
     Returns:
@@ -20,8 +30,18 @@ async def execute_order(ingredients: Ingredients) -> Ingredients:
     Raises:
         Returns the original Ingredients object if any error occurs during processing.
     """
-    logger.info(f"execute_order called with ingredients: {ingredients}")
+    logger.info(f"execute_order called with order_id={order_id}, ingredients: {ingredients}")
     updated_ingredients = []
+
+    # Publish event to Redis
+    publisher = EventPublisher()
+    event_message = {
+        "status": "making",
+        "message": "Making order.",
+        "order_id": order_id,
+    }
+    asyncio.create_task(publisher.publish_event(REDIS_CHANNEL, event_message))
+
     try:
         for ingredient in ingredients.ingredients:
             logger.info(f"Consuming ingredient: {ingredient.ingredient_name}, amount: {ingredient.amount} {ingredient.unit}")

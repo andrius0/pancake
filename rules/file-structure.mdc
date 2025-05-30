@@ -1,0 +1,82 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+pancake-order-system/
+├── shared/
+│   ├── interface.py
+│   ├── logging_config.py
+│   └── __init__.py
+├── order_service/
+│   ├── src/
+│   │   ├── main.py
+│   │   ├── api.py
+│   │   └── __init__.py
+│   ├── shared/
+│   ├── tests/
+│   │   └── test_api.py
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── venv/
+├── workflow_worker/
+│   ├── src/
+│   │   ├── main.py
+│   │   ├── pancake_workflow.py
+│   │   └── __init__.py
+│   ├── shared/
+│   ├── tests/
+│   │   └── test_workflow.py
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── venv/
+├── activity_workers/
+│   ├── analyze_order/
+│   │   ├── src/
+│   │   │   ├── main.py
+│   │   │   ├── analyze_order.py
+│   │   │   └── __init__.py
+│   │   ├── shared/
+│   │   ├── tests/
+│   │   │   └── test_analyze_order.py
+│   │   ├── requirements.txt
+│   │   ├── Dockerfile
+│   │   └── venv/
+│   ├── inventory/
+│   │   ├── src/
+│   │   │   ├── main.py
+│   │   │   ├── inventory_check.py
+│   │   │   ├── db_tools.py
+│   │   │   └── __init__.py
+│   │   ├── shared/
+│   │   ├── tests/
+│   │   │   └── test_inventory_check.py
+│   │   ├── requirements.txt
+│   │   ├── Dockerfile
+│   │   └── venv/
+│   ├── kitchen/
+│   │   ├── src/
+│   │   │   ├── main.py
+│   │   │   ├── execute_order.py
+│   │   │   ├── db_tools_kitchen.py
+│   │   │   └── __init__.py
+│   │   ├── shared/
+│   │   ├── tests/
+│   │   │   └── test_execute_order.py
+│   │   ├── requirements.txt
+│   │   ├── Dockerfile
+│   │   └── venv/
+│   ├── notify/
+│   │   ├── src/
+│   │   │   ├── main.py
+│   │   │   ├── notify.py
+│   │   │   └── __init__.py
+│   │   ├── shared/
+│   │   ├── tests/
+│   │   │   └── test_notify.py
+│   │   ├── requirements.txt
+│   │   ├── Dockerfile
+│   │   └── venv/
+├── db/
+│   └── init.sql
+├── docker-compose.yml

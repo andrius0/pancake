@@ -3,6 +3,7 @@ import os
 import logging
 from typing import List, Dict
 import json
+from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
@@ -11,6 +12,13 @@ from temporalio import activity
 
 from db_tools import check_ingredients_tool, get_inventory_tool
 from shared.interface import Ingredients, InventoryResponse
+
+from shared.event_publisher import EventPublisher
+import asyncio
+
+load_dotenv()
+
+REDIS_CHANNEL = os.getenv("REDIS_CHANNEL", "orders")
 
 SYSTEM_PROMPT = """You are a kitchen inventory management assistant. Your task is to check if we have enough ingredients for an order.
 
@@ -87,6 +95,15 @@ async def inventory_check(order_id: str, ingredients: Ingredients) -> str:
         }
 
         logger.info(f"Invoking agent with message: {initial_message}")
+
+        # Publish event to Redis
+        publisher = EventPublisher()
+        event_message = {
+            "status": "inventory_check",
+            "message": "Checking inventory for order.",
+            "order_id": str(order_id),
+        }
+        asyncio.create_task(publisher.publish_event(REDIS_CHANNEL, event_message))
 
         response = agent.invoke(initial_message)
         

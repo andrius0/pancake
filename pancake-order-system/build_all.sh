@@ -8,6 +8,11 @@ echo "****************************************************"
 docker build -t pancake-order-service:latest ./order_service
 
 echo "****************************************************"
+echo "Building status_service..."
+echo "****************************************************"
+docker build -t pancake-status-service:latest ./status_service
+
+echo "****************************************************"
 echo "Building workflow_worker..."
 echo "****************************************************"
 docker build -t pancake-workflow-worker:latest ./workflow_worker

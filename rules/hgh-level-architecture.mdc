@@ -1,0 +1,46 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+graph TD
+    %% API Layer
+    OrderService["Order Service\n(Receives API Order, Starts Workflow)"]
+
+    %% Workflow Orchestration
+    TemporalServer["Temporal Server\nOrchestrates Workflow Steps"]
+
+    %% Activity Workers
+    AnalyzeOrderWorker["Analyze Order Worker\nExtracts Ingredients (LangChain, GPT-4.1)"]
+    InventoryWorker["Inventory Check Worker\nQueries Inventory DB, Makes AI Decision"]
+    KitchenWorker["Kitchen Worker\nDeducts Ingredients from DB"]
+    NotifyWorker["Notify Worker\nSends Notification"]
+
+    %% Data Store
+    PostgreSQL["PostgreSQL\nkitchen_inventory"]
+
+    %% External AI Integration
+    OpenAI["OpenAI GPT-4.1\nUsed via LangChain"]
+
+    %% Customer
+    Customer["Customer\nReceives Notification"]
+
+    %% Main Flow
+    OrderService -->|Start Workflow| TemporalServer
+
+    TemporalServer -->|analyze_order| AnalyzeOrderWorker
+    AnalyzeOrderWorker -->|Uses GPT-4.1| OpenAI
+    AnalyzeOrderWorker -->|Returns Ingredients| TemporalServer
+
+    TemporalServer -->|inventory_check| InventoryWorker
+    InventoryWorker -->|Query| PostgreSQL
+    PostgreSQL -->|Available Data| InventoryWorker
+    InventoryWorker -->|Decision| TemporalServer
+
+    TemporalServer -->|If make: execute_order| KitchenWorker
+    KitchenWorker -->|Update DB| PostgreSQL
+    KitchenWorker -->|Confirm| TemporalServer
+
+    TemporalServer -->|If no make: notify| NotifyWorker
+    NotifyWorker -->|Send Message| Customer
+    NotifyWorker -->|Ack| TemporalServer

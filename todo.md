@@ -109,8 +109,24 @@ Each microservice must be independently executable and containerized with its ow
 
 ---
 
-### Other/General
+### Status Service
+
+- [x] Implement service to subscribe to Redis channel for order status events.
+- [x] Log all received messages for monitoring and debugging.
+- [x] Create Dockerfile and requirements.txt.
+- [x] All configuration and secrets loaded from .env using dotenv.
+
+---
+
+### Eventing & Shared Code
+
+- [x] Implement Redis event publishing in order_service and subscribing in status_service.
+- [x] Use `sync_shared.sh` to synchronize shared code across all services.
+
+---
+
+### General Setup (Ongoing)
 
 - [ ] (Ongoing) Keep `todo.md` up to date as work progresses.
 - [ ] (Ongoing) Add/expand documentation for deployment, environment setup, and local development.
-- [ ] (Ongoing) Add/expand monitoring and alerting setup.
+- [ ] (Ongoing) Add/expand monitoring and alerting setup (including event log monitoring for status_service).

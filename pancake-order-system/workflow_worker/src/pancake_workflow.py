@@ -3,6 +3,8 @@ from temporalio import workflow
 from temporalio.common import RetryPolicy
 from typing import Dict, List
 from shared.interface import OrderRequest, Ingredients
+from dotenv import load_dotenv
+import os
 
 # workflow is kicked off by the order_service, by call to /order endpoint
 # order_service will pass in the 
@@ -10,6 +12,12 @@ from shared.interface import OrderRequest, Ingredients
 # order_details
 # ingredient_requirements   
 
+from shared.event_publisher import EventPublisher
+import asyncio
+
+load_dotenv()
+
+REDIS_CHANNEL = os.getenv("REDIS_CHANNEL", "orders")
 
 @workflow.defn
 class PancakeOrderWorkflow:
@@ -71,7 +79,7 @@ class PancakeOrderWorkflow:
             workflow.logger.info(f"Decision: MAKE. Sending to kitchen.")
             kitchen_result = await workflow.execute_activity(
                 "execute_order",
-                args=[required_ingredients],
+                args=[order_id, required_ingredients],
                 task_queue="kitchen-task-queue",
                 schedule_to_close_timeout=timedelta(seconds=30)
             )

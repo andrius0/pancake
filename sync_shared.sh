@@ -10,6 +10,7 @@ SERVICES=(
   "activity_workers/inventory"
   "activity_workers/kitchen"
   "activity_workers/notify"
+  "status_service"
 )
 
 for service in "${SERVICES[@]}"; do
@@ -20,4 +21,4 @@ for service in "${SERVICES[@]}"; do
   cp -r "$ROOT_SHARED/"* "$TARGET/"
 done
 
-echo "Shared code sync complete." 
+echo "Shared code sync complete."

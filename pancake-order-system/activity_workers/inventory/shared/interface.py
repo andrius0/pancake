@@ -57,7 +57,7 @@ async def inventory_check(order_id: str, ingredients: Ingredients) -> str:
     raise NotImplementedError
 
 @activity.defn(name="notify")
-async def notify(order_id: str, message: str) -> None:
+async def notify(order_id: str, message: str) -> str:
     raise NotImplementedError
 
 @activity.defn(name="execute_order")
