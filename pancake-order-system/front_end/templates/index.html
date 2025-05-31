@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pancake House</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #fff; }
+        .navbar { background: #FFC20E; }
+        .navbar-brand { font-weight: bold; font-size: 2rem; }
+        .hero {
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1500&q=80') center/cover no-repeat;
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-text {
+            position: absolute;
+            color: #fff;
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px #0008;
+        }
+        .hero-text .yellow { color: #FFC20E; }
+        .what-we-do {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 2rem;
+            margin-top: -4rem;
+            max-width: 600px;
+        }
+        .stat {
+            font-size: 4rem;
+            color: #FFC20E;
+            font-weight: bold;
+        }
+        .order-animate {
+            animation: orderGlow 1s ease;
+            box-shadow: 0 0 0 4px #28a74588, 0 2px 8px #0006;
+            border: 2px solid #28a745 !important;
+        }
+        @keyframes orderGlow {
+            0% { box-shadow: 0 0 0 0 #28a74500, 0 2px 8px #0006; }
+            50% { box-shadow: 0 0 0 8px #28a74588, 0 2px 8px #0006; }
+            100% { box-shadow: 0 0 0 0 #28a74500, 0 2px 8px #0006; }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Pancake House</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Menu</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Order</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="hero position-relative">
+    <video id="heroVideo" autoplay loop muted playsinline class="w-100 h-100 position-absolute top-0 start-0 object-fit-cover" style="z-index:0; object-fit:cover; min-height:100%; min-width:100%; transition: filter 0.5s;">
+        <source src="{{ url_for('static', filename='video/pancakes.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div id="videoOverlay" class="position-absolute top-0 start-0 w-100 h-100" style="z-index:0; background: rgba(0,0,0,0); transition: background 0.5s;"></div>
+    <div class="hero-text text-center w-100 position-relative" style="z-index:1;">
+        we are <span class="yellow">flippin'</span> awesome
+        <form class="d-flex flex-column align-items-center justify-content-center mt-4 w-100 position-relative" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+            <label for="orderDescription" class="form-label fs-4 fw-semibold mb-2 text-center" style="color: #fff; text-shadow: 2px 2px 8px #0008;">Describe your pancake order</label>
+            <div id="orderSuccess" class="d-none position-absolute top-50 start-50 translate-middle w-100 text-center" style="font-size:2rem; color: #28a745; pointer-events:none; z-index:2;">
+                <span class="fw-bold" style="background:rgba(255,255,255,0.95); border-radius:1rem; padding:0.5rem 2rem; box-shadow:0 2px 8px #0001;">&#10003; Order submitted!</span>
+            </div>
+            <textarea id="orderDescription" name="orderDescription" class="form-control mx-auto" rows="3" style="max-width: 600px; min-width: 320px; font-size: 1.25rem; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 2px 8px #0006; background: rgba(255,255,255,0.95);" placeholder="Tell us how you like your pancakes... (e.g., extra syrup, gluten-free, with berries)" onfocus="showOrderButton()"></textarea>
+            <button id="placeOrderBtn" type="submit" class="btn btn-warning btn-lg mt-3 px-5 fw-bold shadow mx-auto">Place Order</button>
+        </form>
+    </div>
+</div>
+<div class="container d-flex flex-column align-items-center">
+    <div class="what-we-do shadow">
+        <h2 class="fw-bold">What we do</h2>
+        <p>Pancake House serves the fluffiest, most delicious pancakes in town. Whether you like them classic, fruity, or with a twist, we have something for everyone. Join us and taste the joy!</p>
+    </div>
+    <div class="container mt-5">
+        <h2 class="fw-bold mb-4" style="font-size:2.5rem;">Our focus</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm position-relative" style="border: none;">
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:8px; background:#FFC20E; border-radius:8px 0 0 8px;"></div>
+                    <img src="{{ url_for('static', filename='image/Classic Fluffy Pancakes_simple_compose.png') }}" class="card-img-top" alt="Classic Pancakes" style="object-fit:cover; height:180px;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold" style="color:#FFC20E; font-size:1.3rem;">Classic Pancakes</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Timeless Taste</h6>
+                        <p class="card-text">Fluffy, golden pancakes made with our traditional recipe. Perfect with syrup, butter, or your favorite toppings.</p>
+                        <a href="#" class="card-link fw-bold" style="color:#3b5d50;">LEARN MORE &rsaquo;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm position-relative" style="border: none;">
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:8px; background:#FFC20E; border-radius:8px 0 0 8px;"></div>
+                    <img src="{{ url_for('static', filename='image/Berry Blast Pancakes_simple_compose.png') }}" class="card-img-top" alt="Berry Blast" style="object-fit:cover; height:180px;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold" style="color:#FFC20E; font-size:1.3rem;">Berry Blast</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Fresh & Fruity</h6>
+                        <p class="card-text">A stack loaded with fresh berries and a hint of lemon zest. A refreshing twist for fruit lovers.</p>
+                        <a href="#" class="card-link fw-bold" style="color:#3b5d50;">LEARN MORE &rsaquo;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm position-relative" style="border: none;">
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:8px; background:#FFC20E; border-radius:8px 0 0 8px;"></div>
+                    <img src="{{ url_for('static', filename='image/Chocolate_Pancake_Indulgence.png') }}" class="card-img-top" alt="Choco Dream" style="object-fit:cover; height:180px;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold" style="color:#FFC20E; font-size:1.3rem;">Choco Dream</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Decadent Delight</h6>
+                        <p class="card-text">Indulge in rich chocolate pancakes, topped with chocolate chips and a drizzle of chocolate sauce.</p>
+                        <a href="#" class="card-link fw-bold" style="color:#3b5d50;">LEARN MORE &rsaquo;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex align-items-center mt-5">
+        <div class="stat me-4">150K+</div>
+        <div>
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-circle me-2" width="60" height="60">
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" class="rounded-circle me-2" width="60" height="60">
+            <img src="https://randomuser.me/api/portraits/men/54.jpg" class="rounded-circle me-2" width="60" height="60">
+            <img src="https://randomuser.me/api/portraits/women/65.jpg" class="rounded-circle" width="60" height="60">
+        </div>
+    </div>
+    <div class="mt-2 mb-5 text-center">Happy customers served!</div>
+    <!-- SSE Output Box Start -->
+    <div class="d-flex justify-content-center mb-5">
+        <textarea id="sseOutput" class="form-control" rows="3" readonly style="width: 420px; max-width: 420px; min-width: 320px; font-size: 1.25rem; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 2px 8px #FFC20E; background: #fffbe6; color: #3b5d50; border: 3px solid #FFC20E; resize: none;"></textarea>
+    </div>
+    <!-- SSE Output Box End -->
+</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function showOrderButton() {
+        const textarea = document.getElementById('orderDescription');
+        textarea.placeholder = '';
+        // Fade video and slow down
+        document.getElementById('videoOverlay').style.background = 'rgba(0,0,0,0.35)';
+        document.getElementById('heroVideo').playbackRate = 0.4;
+    }
+    // Restore video if textarea is blurred and empty
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('orderDescription');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        textarea.addEventListener('blur', function() {
+            if (!textarea.value) {
+                document.getElementById('videoOverlay').style.background = 'rgba(0,0,0,0)';
+                document.getElementById('heroVideo').playbackRate = 1.0;
+            }
+        });
+        // Handle order submit animation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (textarea.value.trim()) {
+                placeOrderBtn.disabled = true;
+                placeOrderBtn.classList.add('disabled');
+                textarea.disabled = true;
+                textarea.style.background = '#e9ecef';
+                fetch('https://my.custom/server', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: textarea.value.trim()
+                })
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    textarea.classList.add('order-animate');
+                    document.getElementById('orderSuccess').classList.remove('d-none');
+                    setTimeout(function() {
+                        textarea.classList.remove('order-animate');
+                        textarea.value = '';
+                        textarea.disabled = false;
+                        textarea.style.background = 'rgba(255,255,255,0.95)';
+                        document.getElementById('orderSuccess').classList.add('d-none');
+                        placeOrderBtn.disabled = false;
+                        placeOrderBtn.classList.remove('disabled');
+                        document.getElementById('videoOverlay').style.background = 'rgba(0,0,0,0)';
+                        document.getElementById('heroVideo').playbackRate = 1.0;
+                        textarea.placeholder = 'Tell us how you like your pancakes... (e.g., extra syrup, gluten-free, with berries)';
+                    }, 1000);
+                })
+                .catch(function(error) {
+                    // Optionally show an error message
+                    textarea.disabled = false;
+                    placeOrderBtn.disabled = false;
+                    placeOrderBtn.classList.remove('disabled');
+                    textarea.style.background = 'rgba(255,255,255,0.95)';
+                    alert('Failed to submit order. Please try again.');
+                });
+            }
+        });
+        // SSE logic
+        const sseOutput = document.getElementById('sseOutput');
+        if (sseOutput && window.EventSource) {
+            const sseUrl = "{{ sse_url }}";
+            const evtSource = new EventSource(sseUrl);
+            evtSource.onmessage = function(event) {
+                sseOutput.value += event.data + '\n';
+                sseOutput.scrollTop = sseOutput.scrollHeight;
+            };
+            evtSource.onerror = function() {
+                sseOutput.value += '[SSE connection error or closed]\n';
+            };
+        }
+    });
+</script>
+</body>
+</html> 

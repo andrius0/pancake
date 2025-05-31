@@ -180,6 +180,38 @@ alwaysApply: true
 
 ---
 
+### 7. Status Service
+
+* **Functionality:**
+  * Subscribes to Redis channel for order status events.
+  * Logs all received messages for monitoring and debugging.
+  * Designed for loose coupling and extensibility (can add more event types or consumers).
+
+* **Inputs:**
+  - Messages from Redis channel (default: `orders`).
+
+* **Outputs:**
+  - Logs of received events.
+
+* **AI Integration:** None.
+* **Data Store:** None.
+* **Config:** All secrets/config loaded from `.env` using `dotenv`.
+
+---
+
+### Shared Code Synchronization
+
+* The `sync_shared.sh` script is used to copy the root `shared/` folder into each service's `shared/` directory, ensuring all services use the same models and logging configuration.
+
+---
+
+### Eventing and Monitoring
+
+* **Redis** is used for event publishing/subscribing between `order_service` and `status_service`.
+* **Real-time monitoring and alerting**: (Ongoing) Expand to include event log monitoring and alerting for failed or delayed orders.
+
+---
+
 ### Data Flow and AI Integration Summary
 
 | Service                | AI Involved?           | Input Source  | Output Destination    | Data Store Interaction  |
@@ -213,7 +245,8 @@ alwaysApply: true
 
 ---
 
-### Deployment Recommendations
+### Deployment Recommendations (Update)
 
 * Docker containers, Docker Compose, Kubernetes, and Temporal Server setup for scalability and orchestration.
 * (Ongoing) Add/expand documentation for deployment, environment setup, and local development.
+* **docker-compose.yml**: Recommended for local development and orchestration of all services, Redis, PostgreSQL, and Temporal Server.

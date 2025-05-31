@@ -1,2 +1,6 @@
 redis
 python-dotenv 
+redis
+python-dotenv
+flask
+flask-cors

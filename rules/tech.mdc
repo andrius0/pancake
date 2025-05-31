@@ -22,3 +22,5 @@ LangChain — AI agent orchestration
 OpenAI GPT-4.1 — Natural Language Processing
 SQLAlchemy — Database interaction (inventory, kitchen)
 psycopg2 — PostgreSQL driver
+Redis >= 7.0 — Eventing and pub/sub for order/status events
+aioredis or redis-py — Python Redis client for event publishing/subscribing

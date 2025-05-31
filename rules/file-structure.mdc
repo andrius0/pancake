@@ -80,3 +80,15 @@ pancake-order-system/
 ├── db/
 │   └── init.sql
 ├── docker-compose.yml
+├── status_service/
+│   ├── shared/
+│   ├── src/
+│   │   ├── main.py
+│   │   └── __init__.py
+│   ├── tests/
+│   │   └── test_status.py
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── venv/
+├── sync_shared.sh
+├── build_all.sh

@@ -25,6 +25,10 @@ graph TD
     %% Customer
     Customer["Customer\nReceives Notification"]
 
+    %% Eventing/Monitoring
+    Redis["Redis\nOrder Status Events"]
+    StatusService["Status Service\nLogs Order Events"]
+
     %% Main Flow
     OrderService -->|Start Workflow| TemporalServer
 
@@ -44,3 +48,6 @@ graph TD
     TemporalServer -->|If no make: notify| NotifyWorker
     NotifyWorker -->|Send Message| Customer
     NotifyWorker -->|Ack| TemporalServer
+
+    OrderService -->|Publishes Status| Redis
+    Redis -->|Subscribes| StatusService

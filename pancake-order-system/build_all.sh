@@ -37,4 +37,10 @@ echo "Building activity_workers/notify..."
 echo "****************************************************"
 docker build -t pancake-notify-worker:latest ./activity_workers/notify
 
+echo "****************************************************"
+echo "Building frontend..."
+echo "****************************************************"
+docker build -t pancake-frontend:latest ./front_end
+
+
 echo "All images built successfully!" 
