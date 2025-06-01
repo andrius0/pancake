@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from shared.interface import OrderRequest, OrderResponse
 from shared.logging_config import setup_logging, log_with_temporal_context
 from temporalio.client import Client
@@ -19,6 +20,20 @@ app = FastAPI(
     title="Pancake Order Service",
     description="API for managing pancake orders with AI-powered ingredient analysis",
     version="1.0.0"
+)
+
+# Add CORS middleware
+origins = [
+    "http://localhost",
+    "http://localhost:5002", # Allow requests from your front-end
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.post("/orders", response_model=OrderResponse)

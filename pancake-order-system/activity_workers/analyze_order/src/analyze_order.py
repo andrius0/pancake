@@ -46,18 +46,25 @@ async def analyze_order(customer_order: str) -> Ingredients:
             "- Common ingredients include: flour, eggs, milk, butter, sugar, baking powder, salt."
         )
 
-        # Publish event to Redis
-        publisher = EventPublisher()
-        event_message = {
-            "status": "analysis",
-            "message": "Order received and is being analyzed.",
-            "order": str(customer_order),
-        }
-        asyncio.create_task(publisher.publish_event(REDIS_CHANNEL, event_message))
 
         result = await structured_llm.ainvoke(prompt.format(order=customer_order))
         logger.info("Order analysis completed.")
         logger.info(f"Analysis output: {result.model_dump()}")
+
+        # Publish event to Redis
+        publisher = EventPublisher()
+        # Format the analysis output for human readability
+        human_readable_ingredients = ", ".join(
+            f"{item.ingredient_name}: {item.amount} {item.unit}"
+            for item in result.ingredients
+        )
+        event_message = {
+            "status": "analysis",
+            "message": f"Analysis output: {human_readable_ingredients}",
+            "order_id": str(customer_order),
+        }
+        asyncio.create_task(publisher.publish_event(REDIS_CHANNEL, event_message))
+
         return result
     except Exception as e:
         logger.error(f"Error in analyze_order_activity: {e}", exc_info=True)

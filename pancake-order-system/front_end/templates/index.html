@@ -144,7 +144,7 @@
     <div class="mt-2 mb-5 text-center">Happy customers served!</div>
     <!-- SSE Output Box Start -->
     <div class="d-flex justify-content-center mb-5">
-        <textarea id="sseOutput" class="form-control" rows="3" readonly style="width: 420px; max-width: 420px; min-width: 320px; font-size: 1.25rem; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 2px 8px #FFC20E; background: #fffbe6; color: #3b5d50; border: 3px solid #FFC20E; resize: none;"></textarea>
+        <textarea id="sseOutput" class="form-control" rows="6" readonly style="width: 819px; max-width: 819px; min-width: 480px; font-size: 1.25rem; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 2px 8px #FFC20E; background: #fffbe6; color: #3b5d50; border: 3px solid #FFC20E; resize: none;"></textarea>
     </div>
     <!-- SSE Output Box End -->
 </div>
@@ -176,10 +176,23 @@
                 placeOrderBtn.classList.add('disabled');
                 textarea.disabled = true;
                 textarea.style.background = '#e9ecef';
-                fetch('https://my.custom/server', {
+
+                // Generate a simple random order ID
+                const orderId = 'order-' + Math.random().toString(36).substr(2, 9);
+
+                // Construct the JSON request body
+                const requestBody = JSON.stringify({
+                    "order_id": orderId,
+                    "customer_order": textarea.value.trim(),
+                    "customer_name": "John Doe" // Static customer name for now
+                });
+
+                fetch('{{ order_service_url }}/orders', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: textarea.value.trim()
+                    headers: {
+                        'Content-Type': 'application/json' // Set content type to JSON
+                    },
+                    body: requestBody // Send the JSON body
                 })
                 .then(function(response) {
                     if (!response.ok) throw new Error('Network response was not ok');
@@ -214,11 +227,19 @@
             const sseUrl = "{{ sse_url }}";
             const evtSource = new EventSource(sseUrl);
             evtSource.onmessage = function(event) {
-                sseOutput.value += event.data + '\n';
-                sseOutput.scrollTop = sseOutput.scrollHeight;
+                try {
+                    const payload = JSON.parse(event.data); // Parse the JSON payload
+                    if (payload && payload.message) {
+                        sseOutput.value += payload.message + '\n'; // Display only the message
+                        sseOutput.scrollTop = sseOutput.scrollHeight;
+                    }
+                } catch (e) {
+                    console.error("Failed to parse SSE data: ", e);
+                    sseOutput.value += '[Error processing message]\n';
+                }
             };
             evtSource.onerror = function() {
-                sseOutput.value += '[SSE connection error or closed]\n';
+                console.error("SSE Error or connection closed.");
             };
         }
     });

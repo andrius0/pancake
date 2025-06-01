@@ -96,15 +96,6 @@ async def inventory_check(order_id: str, ingredients: Ingredients) -> str:
 
         logger.info(f"Invoking agent with message: {initial_message}")
 
-        # Publish event to Redis
-        publisher = EventPublisher()
-        event_message = {
-            "status": "inventory_check",
-            "message": "Checking inventory for order.",
-            "order_id": str(order_id),
-        }
-        asyncio.create_task(publisher.publish_event(REDIS_CHANNEL, event_message))
-
         response = agent.invoke(initial_message)
         
         structured = response["structured_response"]
@@ -114,6 +105,15 @@ async def inventory_check(order_id: str, ingredients: Ingredients) -> str:
             decision=structured.decision
         )
         logger.info("Inventory check response:\n%s", json.dumps(result.model_dump(), indent=2, ensure_ascii=False))
+        
+        # Publish event to Redis
+        publisher = EventPublisher()
+        event_message = {
+            "status": "inventory_check",
+            "message": f"Inventory check for order {order_id}: Decision - {result.decision}. Available: {', '.join(result.available_ingredients)}. Missing: {', '.join(result.missing_ingredients)}",
+            "order_id": str(order_id),
+        }
+        asyncio.create_task(publisher.publish_event(REDIS_CHANNEL, event_message))
         return result
 
 
