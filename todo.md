@@ -46,6 +46,7 @@ Each microservice must be independently executable and containerized with its ow
 - [x] Create `requirements.txt` with langchain, openai, pydantic, temporalio.
 - [x] Remove unnecessary imports and refactor for clarity.
 - [x] All configuration and secrets loaded from .env using dotenv.
+- [x] Improve analysis output message format for human readability (ingredient name, amount, unit).
 
 ---
 
@@ -59,6 +60,7 @@ Each microservice must be independently executable and containerized with its ow
 - [x] Create Dockerfile.
 - [x] Create `requirements.txt` with sqlalchemy, langchain, psycopg2.
 - [x] All configuration and secrets loaded from .env using dotenv.
+- [x] Improve inventory check message format for human readability (decision, available/missing ingredients).
 - [ ] (Optional) Investigate and fix async/sync issues with agent.invoke in inventory_check.py (should agent.invoke be awaited or run in a thread for true async compatibility?).
 
 ---
