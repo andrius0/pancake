@@ -61,5 +61,5 @@ async def notify(order_id: str, message: str) -> str:
     raise NotImplementedError
 
 @activity.defn(name="execute_order")
-async def execute_order(ingredients: Ingredients) -> Ingredients:
+async def execute_order(order_id: str, ingredients: Ingredients) -> Ingredients:
     raise NotImplementedError    
